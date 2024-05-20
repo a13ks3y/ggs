@@ -1,84 +1,58 @@
 
-const ffmpeg = require('fluent-ffmpeg');
-const Jimp = require('jimp');
-const fs = require('fs');
-const path = require('path');
-
 const processFrame = async (framePath) => {
     const image = await Jimp.read(framePath);
-    const { width, height } = image.bitmap;
-    const gridSize = 3;
-    const blockWidth = Math.floor(width / gridSize);
-    const blockHeight = Math.floor(height / gridSize);
+    const width = image.bitmap.width;
+    const height = image.bitmap.height;
+    const blockSize = Math.floor(width / 3);
     
-    let binaryKey = [];
-    let parityCheck = 0;
-    
-    for (let i = 0; i < gridSize; i++) {
-        for (let j = 0; j < gridSize; j++) {
-            const x = j * blockWidth;
-            const y = i * blockHeight;
-            const block = image.clone().crop(x, y, blockWidth, blockHeight);
-            const avgBrightness = block.bitmap.data.reduce((sum, value, idx) => {
-                return sum + (idx % 4 === 0 ? value : 0);
-            }, 0) / (blockWidth * blockHeight);
-            
-            if (avgBrightness > 127) {
-                if (!(i === 1 && j === 1)) {
-                    binaryKey.push(1);
-                }
-                parityCheck += 1;
-            } else {
-                if (!(i === 1 && j === 1)) {
-                    binaryKey.push(0);
-                }
-            }
+    const blocks = [];
+    for (let y = 0; y < 3; y++) {
+        for (let x = 0; x < 3; x++) {
+            const xOffset = x * blockSize;
+            const yOffset = y * blockSize;
+            const block = image.clone().crop(xOffset, yOffset, blockSize, blockSize);
+            const isCloud = block.bitmap.data.some(pixel => pixel < 128);
+            blocks.push(isCloud ? 1 : 0);
         }
     }
     
-    const centralBlock = image.clone().crop(blockWidth, blockHeight, blockWidth, blockHeight);
-    const avgCentralBrightness = centralBlock.bitmap.data.reduce((sum, value, idx) => {
-        return sum + (idx % 4 === 0 ? value : 0);
-    }, 0) / (blockWidth * blockHeight);
-    const centralParity = avgCentralBrightness > 127 ? 1 : 0;
-    
-    if (centralParity !== parityCheck % 2) {
-        console.warn("Central block parity check failed.");
+    const parityCheck = blocks.splice(4, 1)[0];
+    const parity = blocks.reduce((a, b) => a ^ b, 0);
+    if (parity !== parityCheck) {
+        console.log('Central block parity check failed.', { blocks, parityCheck, parity });
+        throw new Error('Central block parity check failed.');
     }
     
-    return binaryKey;
+    return blocks;
 };
 
 const processVideo = async (videoPath) => {
-    const tempDir = path.join(__dirname, 'temp');
-    if (!fs.existsSync(tempDir)) {
-        fs.mkdirSync(tempDir);
+    const framesDir = path.join(__dirname, 'frames');
+    if (!fs.existsSync(framesDir)) {
+        fs.mkdirSync(framesDir);
     }
-
-    const command = ffmpeg(videoPath)
-        .outputOptions('-vf', 'fps=1')
-        .save(path.join(tempDir, 'frame_%04d.png'));
-
-    return new Promise((resolve, reject) => {
-        command.on('end', async () => {
-            const frameFiles = fs.readdirSync(tempDir).filter(file => file.endsWith('.png'));
-            let frameKeys = [];
-            for (const frameFile of frameFiles) {
-                try {
-                    const framePath = path.join(tempDir, frameFile);
-                    const key = await processFrame(framePath);
-                    frameKeys.push(key);
-                } catch (error) {
-                    console.error(error);
-                }
-            }
-            resolve(frameKeys);
-        });
-
-        command.on('error', (err) => {
-            reject(err);
-        });
+    
+    await new Promise((resolve, reject) => {
+        ffmpeg(videoPath)
+            .output(path.join(framesDir, 'frame_%04d.png'))
+            .on('end', resolve)
+            .on('error', reject)
+            .run();
     });
+    
+    const frameFiles = fs.readdirSync(framesDir).filter(file => file.endsWith('.png'));
+    const keys = [];
+    for (const frameFile of frameFiles) {
+        const framePath = path.join(framesDir, frameFile);
+        try {
+            const key = await processFrame(framePath);
+            keys.push(key);
+        } catch (error) {
+            console.error(error.message);
+        }
+    }
+    
+    return keys;
 };
 
-module.exports = { processFrame, processVideo };
+module.exports = { processVideo, processFrame };
