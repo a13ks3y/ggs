@@ -112,7 +112,6 @@ let testCode = fs.readFileSync(testPath, 'utf8');
 
 const testProcessVideoCode = `
 const { processVideo, processFrame } = require('./processVideo');
-const assert = require('assert');
 
 const testProcessVideo = async () => {
     const videoPath = 'clouds.mp4';
@@ -224,7 +223,7 @@ const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 if (!packageJson.scripts) packageJson.scripts = {};
 packageJson.scripts.test = "node src/test.js";
 packageJson.scripts.start = "node src/cli.js";
-packageJson.scripts['latest-patch'] = "node patch-0.0.11.js";
+packageJson.scripts['latest-patch'] = "node patch-0.0.12.js";
 
 if (!packageJson.bin) packageJson.bin = {};
 packageJson.bin['otp-cloud'] = "./src/cli.js";
@@ -236,5 +235,11 @@ fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 // Автоматизация git-команд
 execSync('git add .', { stdio: 'inherit' });
 execSync(`git commit -m "Apply patch-0.0.11.js: ${process.argv.slice(2).join(' ')}"`, { stdio: 'inherit' });
+
+// Создание следующего патча и открытие его в редакторе
+const nextPatchNumber = 12;
+const nextPatchFilename = `patch-0.0.${nextPatchNumber}.js`;
+fs.writeFileSync(nextPatchFilename, '');
+execSync(`code ${nextPatchFilename}`, { stdio: 'inherit' });
 
 console.log('Patch applied. Use "npm test" to run the tests.');
