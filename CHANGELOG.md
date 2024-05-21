@@ -45,3 +45,11 @@
 
 ### Requests
 - 
+
+## [1.0.6] - 2024-05-21
+### Added
+- Added a real-life usage example in the `example` directory.
+- Added detailed description of the algorithm and possible usage scenarios to README.md.
+
+### Requests
+- 

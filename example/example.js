@@ -33,6 +33,11 @@ const main = async () => {
     shiftedKeys.forEach((key, index) => {
         console.log(`Shifted Frame ${index + 1}: `, key);
     });
+
+    // Step 4: Compare keys
+    console.log('Comparing keys...');
+    const areKeysEqual = JSON.stringify(keys) === JSON.stringify(shiftedKeys);
+    console.log('Are original keys equal to shifted keys:', areKeysEqual);
 };
 
 main().catch(console.error);
