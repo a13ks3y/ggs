@@ -38,3 +38,10 @@
 
 ### Requests
 - 
+
+## [1.0.5] - 2024-05-21
+### Added
+- Added a detailed description of the algorithm and possible usage scenarios to README.md.
+
+### Requests
+- 
