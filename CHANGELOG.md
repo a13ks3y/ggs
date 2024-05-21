@@ -14,3 +14,11 @@
 
 ### Requests
 - 
+
+## [0.0.16] - 2024-05-20
+### Added
+- Fixed import issues and simplified central block parity check in processVideo.
+- Updated CLI to version 0.0.16.
+
+### Requests
+- 

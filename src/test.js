@@ -27,7 +27,7 @@ const testProcessVideo = async () => {
     const framePath = path.join(tempDir, frameFiles[0]);
     const key = await processFrame(framePath);
     assert(Array.isArray(key), 'Key is not an array');
-    assert(key.length === 8, 'Key length is not 8');
+    assert(key.length === 9, 'Key length is not 9');
 };
 
 try {

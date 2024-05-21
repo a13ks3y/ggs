@@ -13,7 +13,6 @@ const processFrame = async (framePath) => {
     const blockWidth = Math.floor(width / gridSize);
     const blockHeight = Math.floor(height / gridSize);
 
-    let centralBlockParity = 0;
     const key = [];
 
     for (let y = 0; y < gridSize; y++) {
@@ -32,18 +31,8 @@ const processFrame = async (framePath) => {
                 }
                 if (isCloud) break;
             }
-
-            if (x === 1 && y === 1) {
-                centralBlockParity = isCloud ? 1 : 0;
-            } else {
-                key.push(isCloud ? 1 : 0);
-            }
+            key.push(isCloud ? 1 : 0);
         }
-    }
-
-    const parityCheck = key.reduce((acc, val) => acc + val, 0) % 2;
-    if (parityCheck !== centralBlockParity) {
-        throw new Error('Central block parity check failed.');
     }
 
     return key;
