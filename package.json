@@ -1,12 +1,12 @@
 {
   "name": "otp-cloud",
-  "version": "1.0.0",
+  "version": "0.0.15",
   "description": "",
   "main": "setup.js",
   "scripts": {
     "test": "node src/test.js",
     "start": "node src/cli.js",
-    "latest-patch": "node patch-0.0.15.js"
+    "latest-patch": "node patch-0.0.16.js"
   },
   "keywords": [],
   "author": "",
