@@ -6,7 +6,7 @@ const shiftVideo = require('./shiftVideo');
 const program = new Command();
 
 program
-    .version('0.0.16')
+    .version('1.0.0')
     .description('OTP Cloud - CLI for processing and shifting videos for cloud-based OTP generation');
 
 program

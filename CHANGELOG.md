@@ -22,3 +22,12 @@
 
 ### Requests
 - 
+
+## [1.0.0] - 2024-05-21
+### Added
+- Initial release version 1.0.0.
+- CLI interface for processing and shifting videos.
+- API for using as a library.
+
+### Requests
+- 
