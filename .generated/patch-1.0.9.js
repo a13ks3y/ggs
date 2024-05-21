@@ -82,7 +82,7 @@ execSync('git commit -m "Implement crop and shift video workflow in patch 1.0.9"
 execSync('git push origin master', { stdio: 'inherit' });
 
 // Create next patch file and open in editor
-const nextPatchNumber = 9;
+const nextPatchNumber = 10;
 const nextPatchFilename = path.join('.generated', `patch-1.0.${nextPatchNumber}.js`);
 fs.writeFileSync(nextPatchFilename, '');
 execSync(`code ${nextPatchFilename}`, { stdio: 'inherit' });
