@@ -17,7 +17,7 @@ execSync('git push origin master', { stdio: 'inherit' });
 
 // Создание следующего патча и открытие его в редакторе
 const nextPatchNumber = 3;
-const nextPatchFilename = path.join(patchesDir, `patch-1.0.${nextPatchNumber}.js`);
+const nextPatchFilename = path.join('.generated', `patch-1.0.${nextPatchNumber}.js`);
 fs.writeFileSync(nextPatchFilename, '');
 execSync(`code ${nextPatchFilename}`, { stdio: 'inherit' });
 
