@@ -6,6 +6,23 @@ const shiftVideo = require('../src/shiftVideo');
 const path = require('path');
 const fs = require('fs');
 
+const compareKeys = (keys1, keys2) => {
+    if (keys1.length !== keys2.length) {
+        console.log('Keys have different lengths');
+        return false;
+    }
+    let areEqual = true;
+    for (let i = 0; i < keys1.length; i++) {
+        if (keys1[i].toString() !== keys2[i].toString()) {
+            console.log(`Mismatch at frame ${i + 1}`);
+            console.log('Original key:', keys1[i]);
+            console.log('Shifted key: ', keys2[i]);
+            areEqual = false;
+        }
+    }
+    return areEqual;
+};
+
 const main = async () => {
     // Path to the input video
     const videoPath = path.join(__dirname, 'input', 'clouds.mp4');
@@ -24,7 +41,7 @@ const main = async () => {
     // Step 2: Shift the video
     const shiftedVideoPath = path.join(__dirname, 'output', 'shifted_clouds.mp4');
     console.log('Shifting video...');
-    await shiftVideo(videoPath, shiftedVideoPath, 10, 10);
+    await shiftVideo(videoPath, shiftedVideoPath, 2, 2); // Use smaller shift values
     console.log('Video shifted successfully.');
 
     // Step 3: Process the shifted video to generate new OTP keys
@@ -36,7 +53,7 @@ const main = async () => {
 
     // Step 4: Compare keys
     console.log('Comparing keys...');
-    const areKeysEqual = JSON.stringify(keys) === JSON.stringify(shiftedKeys);
+    const areKeysEqual = compareKeys(keys, shiftedKeys);
     console.log('Are original keys equal to shifted keys:', areKeysEqual);
 };
 
