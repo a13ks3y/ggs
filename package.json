@@ -6,7 +6,7 @@
   "scripts": {
     "test": "node src/test.js",
     "start": "node src/cli.js",
-    "latest-patch": "node .generated/patch-1.0.3.js"
+    "latest-patch": "node .generated/patch-1.0.5.js"
   },
   "keywords": [],
   "author": "",

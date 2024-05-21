@@ -31,3 +31,10 @@
 
 ### Requests
 - 
+
+## [1.0.4] - 2024-05-21
+### Added
+- Added a real-life usage example in the `example` directory.
+
+### Requests
+- 

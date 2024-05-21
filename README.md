@@ -45,3 +45,16 @@ shiftVideo(inputPath, outputPath, shiftX, shiftY).then(() => {
     console.log('Video shifted successfully');
 });
 ```
+
+## Example Usage
+
+To see a real-life usage example, follow these steps:
+
+1. Place an input video named `clouds.mp4` in the `example/input` directory.
+2. Run the example script:
+
+```sh
+node example/example.js
+```
+
+This will process the input video to generate OTP keys, shift the video, and then process the shifted video to generate new OTP keys. The output will be displayed in the console.
