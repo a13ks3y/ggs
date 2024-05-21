@@ -2,84 +2,6 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-// Создание директории для примеров
-const examplePath = path.join(__dirname, '../example');
-if (!fs.existsSync(examplePath)) {
-    fs.mkdirSync(examplePath);
-}
-
-const exampleCode = `
-// This script demonstrates a real-life usage example of the OTP Cloud project
-
-const { processVideo } = require('../src/processVideo');
-const shiftVideo = require('../src/shiftVideo');
-const path = require('path');
-const fs = require('fs');
-
-const compareKeys = (keys1, keys2) => {
-    if (keys1.length !== keys2.length) return false;
-    for (let i = 0; i < keys1.length; i++) {
-        if (keys1[i].toString() !== keys2[i].toString()) {
-            console.log(\`Mismatch at frame \${i + 1}\`);
-            console.log('Original key:', keys1[i]);
-            console.log('Shifted key: ', keys2[i]);
-            return false;
-        }
-    }
-    return true;
-};
-
-const main = async () => {
-    // Path to the input video
-    const videoPath = path.join(__dirname, 'input', 'clouds.mp4');
-    if (!fs.existsSync(videoPath)) {
-        console.error('Input video not found. Please add a video named "clouds.mp4" in the "input" folder.');
-        return;
-    }
-
-    // Step 1: Process the video to generate OTP keys
-    console.log('Processing video to generate OTP keys...');
-    const keys = await processVideo(videoPath);
-    keys.forEach((key, index) => {
-        console.log(\`Frame \${index + 1}: \`, key);
-    });
-
-    // Step 2: Shift the video
-    const shiftedVideoPath = path.join(__dirname, 'output', 'shifted_clouds.mp4');
-    console.log('Shifting video...');
-    await shiftVideo(videoPath, shiftedVideoPath, 2, 2); // Use smaller shift values
-    console.log('Video shifted successfully.');
-
-    // Step 3: Process the shifted video to generate new OTP keys
-    console.log('Processing shifted video to generate new OTP keys...');
-    const shiftedKeys = await processVideo(shiftedVideoPath);
-    shiftedKeys.forEach((key, index) => {
-        console.log(\`Shifted Frame \${index + 1}: \`, key);
-    });
-
-    // Step 4: Compare keys
-    console.log('Comparing keys...');
-    const areKeysEqual = compareKeys(keys, shiftedKeys);
-    console.log('Are original keys equal to shifted keys:', areKeysEqual);
-};
-
-main().catch(console.error);
-`;
-
-fs.writeFileSync(path.join(examplePath, 'example.js'), exampleCode);
-
-// Создание директорий для входного и выходного видео
-const inputDir = path.join(examplePath, 'input');
-const outputDir = path.join(examplePath, 'output');
-
-if (!fs.existsSync(inputDir)) {
-    fs.mkdirSync(inputDir);
-}
-
-if (!fs.existsSync(outputDir)) {
-    fs.mkdirSync(outputDir);
-}
-
 // Обновление README.md для включения примера использования
 const readmePath = path.join(__dirname, '../README.md');
 let readmeContent = fs.existsSync(readmePath) ? fs.readFileSync(readmePath, 'utf8') : '';
@@ -131,17 +53,16 @@ const changelogPath = path.join(__dirname, '../CHANGELOG.md');
 let changelogContent = fs.existsSync(changelogPath) ? fs.readFileSync(changelogPath, 'utf8') : '';
 
 const changelogEntry = `
-## [1.0.7] - 2024-05-21
+## [1.0.8] - 2024-05-21
 ### Added
-- Added a real-life usage example in the \`example\` directory.
 - Added detailed description of the algorithm and possible usage scenarios to README.md.
-- Added end-to-end test to compare original and shifted keys.
+- Added end-to-end test to compare original and shifted keys with detailed mismatch output.
 
 ### Requests
 - ${process.argv.slice(2).join(' ')}
 `;
 
-if (!changelogContent.includes('## [1.0.7] - 2024-05-21')) {
+if (!changelogContent.includes('## [1.0.8] - 2024-05-21')) {
     changelogContent += changelogEntry;
 }
 
@@ -151,19 +72,85 @@ fs.writeFileSync(changelogPath, changelogContent);
 const packageJsonPath = path.join(__dirname, '../package.json');
 const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 
-packageJson.version = "1.0.7";
+packageJson.version = "1.0.8";
 
 fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 
 // Автоматизация git-команд
 execSync('git add .', { stdio: 'inherit' });
-execSync(`git commit -m "Apply patch-1.0.7.js: ${process.argv.slice(2).join(' ')}"`, { stdio: 'inherit' });
+execSync(`git commit -m "Apply patch-1.0.8.js: ${process.argv.slice(2).join(' ')}"`, { stdio: 'inherit' });
 execSync('git push origin master', { stdio: 'inherit' });
 
 // Создание следующего патча и открытие его в редакторе
-const nextPatchNumber = 8;
+const nextPatchNumber = 9;
 const nextPatchFilename = path.join(__dirname, '../.generated', `patch-1.0.${nextPatchNumber}.js`);
 fs.writeFileSync(nextPatchFilename, '');
 execSync(`code ${nextPatchFilename}`, { stdio: 'inherit' });
 
 console.log('Patch applied. Use "npm test" to run the tests.');
+
+const exampleCode = `
+// This script demonstrates a real-life usage example of the OTP Cloud project
+
+const { processVideo } = require('../src/processVideo');
+const shiftVideo = require('../src/shiftVideo');
+const path = require('path');
+const fs = require('fs');
+
+const compareKeys = (keys1, keys2) => {
+    if (keys1.length !== keys2.length) {
+        console.log('Keys have different lengths');
+        return false;
+    }
+    let areEqual = true;
+    for (let i = 0; i < keys1.length; i++) {
+        if (keys1[i].toString() !== keys2[i].toString()) {
+            console.log(\`Mismatch at frame \${i + 1}\`);
+            console.log('Original key:', keys1[i]);
+            console.log('Shifted key: ', keys2[i]);
+            areEqual = false;
+        }
+    }
+    return areEqual;
+};
+
+const main = async () => {
+    // Path to the input video
+    const videoPath = path.join(__dirname, 'input', 'clouds.mp4');
+    if (!fs.existsSync(videoPath)) {
+        console.error('Input video not found. Please add a video named "clouds.mp4" in the "input" folder.');
+        return;
+    }
+
+    // Step 1: Process the video to generate OTP keys
+    console.log('Processing video to generate OTP keys...');
+    const keys = await processVideo(videoPath);
+    keys.forEach((key, index) => {
+        console.log(\`Frame \${index + 1}: \`, key);
+    });
+
+    // Step 2: Shift the video
+    const shiftedVideoPath = path.join(__dirname, 'output', 'shifted_clouds.mp4');
+    console.log('Shifting video...');
+    await shiftVideo(videoPath, shiftedVideoPath, 2, 2); // Use smaller shift values
+    console.log('Video shifted successfully.');
+
+    // Step 3: Process the shifted video to generate new OTP keys
+    console.log('Processing shifted video to generate new OTP keys...');
+    const shiftedKeys = await processVideo(shiftedVideoPath);
+    shiftedKeys.forEach((key, index) => {
+        console.log(\`Shifted Frame \${index + 1}: \`, key);
+    });
+
+    // Step 4: Compare keys
+    console.log('Comparing keys...');
+    const areKeysEqual = compareKeys(keys, shiftedKeys);
+    console.log('Are original keys equal to shifted keys:', areKeysEqual);
+};
+
+main().catch(console.error);
+`;
+
+fs.writeFileSync(path.join(examplePath, 'example.js'), exampleCode);
+
+console.log('Example script created. Use "node example/example.js" to run the example.');

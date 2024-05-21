@@ -53,3 +53,11 @@
 
 ### Requests
 - 
+
+## [1.0.8] - 2024-05-21
+### Added
+- Added detailed description of the algorithm and possible usage scenarios to README.md.
+- Added end-to-end test to compare original and shifted keys with detailed mismatch output.
+
+### Requests
+- 
