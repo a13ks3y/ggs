@@ -151,6 +151,6 @@ const main = async () => {
 main().catch(console.error);
 `;
 
-fs.writeFileSync(path.join(examplePath, 'example.js'), exampleCode);
+fs.writeFileSync(path.join(__dirname, '../example', 'example.js'), exampleCode);
 
 console.log('Example script created. Use "node example/example.js" to run the example.');

@@ -1,60 +1,29 @@
 
-// This script demonstrates a real-life usage example of the OTP Cloud project
+const { processVideo, cropAndShiftVideo } = require('../src/processVideo');
 
-const { processVideo } = require('../src/processVideo');
-const shiftVideo = require('../src/shiftVideo');
-const path = require('path');
-const fs = require('fs');
+const inputVideo = 'clouds.mp4';
+const outputVideoAlice = 'shifted_clouds_alice.mp4';
+const outputVideoBob = 'shifted_clouds_bob.mp4';
+const cropWidth = 640;
+const cropHeight = 480;
+const shiftXAlice = 10;
+const shiftYAlice = 10;
+const shiftXBob = -10;
+const shiftYBob = -10;
 
-const compareKeys = (keys1, keys2) => {
-    if (keys1.length !== keys2.length) {
-        console.log('Keys have different lengths');
-        return false;
-    }
-    let areEqual = true;
-    for (let i = 0; i < keys1.length; i++) {
-        if (keys1[i].toString() !== keys2[i].toString()) {
-            console.log(`Mismatch at frame ${i + 1}`);
-            console.log('Original key:', keys1[i]);
-            console.log('Shifted key: ', keys2[i]);
-            areEqual = false;
-        }
-    }
-    return areEqual;
-};
-
-const main = async () => {
-    // Path to the input video
-    const videoPath = path.join(__dirname, 'input', 'clouds.mp4');
-    if (!fs.existsSync(videoPath)) {
-        console.error('Input video not found. Please add a video named "clouds.mp4" in the "input" folder.');
-        return;
-    }
-
-    // Step 1: Process the video to generate OTP keys
-    console.log('Processing video to generate OTP keys...');
-    const keys = await processVideo(videoPath);
-    keys.forEach((key, index) => {
-        console.log(`Frame ${index + 1}: `, key);
-    });
-
-    // Step 2: Shift the video
-    const shiftedVideoPath = path.join(__dirname, 'output', 'shifted_clouds.mp4');
-    console.log('Shifting video...');
-    await shiftVideo(videoPath, shiftedVideoPath, 2, 2); // Use smaller shift values
-    console.log('Video shifted successfully.');
-
-    // Step 3: Process the shifted video to generate new OTP keys
-    console.log('Processing shifted video to generate new OTP keys...');
-    const shiftedKeys = await processVideo(shiftedVideoPath);
-    shiftedKeys.forEach((key, index) => {
-        console.log(`Shifted Frame ${index + 1}: `, key);
-    });
-
-    // Step 4: Compare keys
-    console.log('Comparing keys...');
-    const areKeysEqual = compareKeys(keys, shiftedKeys);
-    console.log('Are original keys equal to shifted keys:', areKeysEqual);
-};
-
-main().catch(console.error);
+(async () => {
+  await cropAndShiftVideo(inputVideo, outputVideoAlice, outputVideoBob, cropWidth, cropHeight, shiftXAlice, shiftYAlice, shiftXBob, shiftYBob);
+  console.log('Videos cropped and shifted successfully.');
+  
+  console.log('Processing Alice's video to generate OTP keys...');
+  const keysAlice = await processVideo(outputVideoAlice);
+  keysAlice.forEach((key, index) => console.log(`Frame ${index + 1}: `, key));
+  
+  console.log('Processing Bob's video to generate OTP keys...');
+  const keysBob = await processVideo(outputVideoBob);
+  keysBob.forEach((key, index) => console.log(`Frame ${index + 1}: `, key));
+  
+  console.log('Comparing keys...');
+  const keysEqual = keysAlice.every((key, index) => JSON.stringify(key) === JSON.stringify(keysBob[index]));
+  console.log('Are Alice's keys equal to Bob's keys:', keysEqual);
+})();
