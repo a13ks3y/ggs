@@ -14,16 +14,16 @@ const shiftYBob = -10;
 (async () => {
   await cropAndShiftVideo(inputVideo, outputVideoAlice, outputVideoBob, cropWidth, cropHeight, shiftXAlice, shiftYAlice, shiftXBob, shiftYBob);
   console.log('Videos cropped and shifted successfully.');
-  
-  console.log('Processing Alice's video to generate OTP keys...');
+
+  console.log('Processing Alice\'s video to generate OTP keys...');
   const keysAlice = await processVideo(outputVideoAlice);
   keysAlice.forEach((key, index) => console.log(`Frame ${index + 1}: `, key));
-  
-  console.log('Processing Bob's video to generate OTP keys...');
+
+  console.log('Processing Bob\'s video to generate OTP keys...');
   const keysBob = await processVideo(outputVideoBob);
   keysBob.forEach((key, index) => console.log(`Frame ${index + 1}: `, key));
-  
+
   console.log('Comparing keys...');
   const keysEqual = keysAlice.every((key, index) => JSON.stringify(key) === JSON.stringify(keysBob[index]));
-  console.log('Are Alice's keys equal to Bob's keys:', keysEqual);
+  console.log('Are Alice\'s keys equal to Bob\'s keys:', keysEqual);
 })();
