@@ -60,6 +60,7 @@ const packageJsonPath = path.join(__dirname, '../', 'package.json');
 const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 
 packageJson.scripts['latest-patch'] = "node .generated/patch-1.0.10.js";
+packageJson.scripts['repatch'] = "node .generated/patch-1.0.10.js";
 packageJson.version = "1.0.10";
 
 fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
