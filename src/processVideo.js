@@ -60,10 +60,6 @@ const processVideo = async (videoPath) => {
     });
 };
 
-module.exports = {
-    processVideo,
-    processFrame
-};
 
 const cropAndShiftVideo = (inputPath, outputPathAlice, outputPathBob, cropWidth, cropHeight, shiftXAlice, shiftYAlice, shiftXBob, shiftYBob) => {
   const ffmpeg = require('fluent-ffmpeg');
@@ -94,5 +90,6 @@ const cropAndShiftVideo = (inputPath, outputPathAlice, outputPathBob, cropWidth,
 
 module.exports = {
   processVideo,
+  processFrame,
   cropAndShiftVideo
 };

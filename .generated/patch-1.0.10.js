@@ -1,14 +1,13 @@
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
+const ffmpeg = require('fluent-ffmpeg');
 
 // Define the cropAndShiftVideo function
 const cropAndShiftVideo = (inputPath, outputPathAlice, outputPathBob, cropWidth, cropHeight, shiftXAlice, shiftYAlice, shiftXBob, shiftYBob) => {
-  const ffmpeg = require('fluent-ffmpeg');
-
   const cropFilter = `crop=${cropWidth}:${cropHeight}`;
-  const shiftFilterAlice = `,transpose=1,translate=${shiftXAlice}:${shiftYAlice}`;
-  const shiftFilterBob = `,transpose=1,translate=${shiftXBob}:${shiftYBob}`;
+  const shiftFilterAlice = `,translate=${shiftXAlice}:${shiftYAlice}`;
+  const shiftFilterBob = `,translate=${shiftXBob}:${shiftYBob}`;
 
   return Promise.all([
     new Promise((resolve, reject) => {
