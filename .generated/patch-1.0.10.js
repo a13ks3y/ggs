@@ -30,11 +30,11 @@ const cropAndShiftVideo = (inputPath, outputPathAlice, outputPathBob, cropWidth,
   ]);
 };
 
-// Update processVideo.js to export the cropAndShiftVideo function
+// Update processVideo.js to export the cropAndShiftVideo function and define processFrame
 const processVideoPath = path.join(__dirname, '../src', 'processVideo.js');
 let processVideoCode = fs.readFileSync(processVideoPath, 'utf8');
 
-if (!processVideoCode.includes('const cropAndShiftVideo')) {
+if (!processVideoCode.includes('const processFrame =')) {
   const processFrameCode = `
 const processFrame = (frame) => {
   // Define your processFrame logic here
@@ -88,17 +88,17 @@ const shiftYBob = -10;
   await cropAndShiftVideo(inputVideo, outputVideoAlice, outputVideoBob, cropWidth, cropHeight, shiftXAlice, shiftYAlice, shiftXBob, shiftYBob);
   console.log('Videos cropped and shifted successfully.');
 
-  console.log('Processing Alice\\'s video to generate OTP keys...');
+  console.log('Processing Alice\'s video to generate OTP keys...');
   const keysAlice = await processVideo(outputVideoAlice);
   keysAlice.forEach((key, index) => console.log(\`Frame \${index + 1}: \`, key));
 
-  console.log('Processing Bob\\'s video to generate OTP keys...');
+  console.log('Processing Bob\'s video to generate OTP keys...');
   const keysBob = await processVideo(outputVideoBob);
   keysBob.forEach((key, index) => console.log(\`Frame \${index + 1}: \`, key));
 
   console.log('Comparing keys...');
   const keysEqual = keysAlice.every((key, index) => JSON.stringify(key) === JSON.stringify(keysBob[index]));
-  console.log('Are Alice\\'s keys equal to Bob\\'s keys:', keysEqual);
+  console.log('Are Alice\'s keys equal to Bob\'s keys:', keysEqual);
 })();
 `;
 
