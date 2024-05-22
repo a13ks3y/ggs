@@ -7,8 +7,8 @@ const cropAndShiftVideo = (inputPath, outputPathAlice, outputPathBob, cropWidth,
   const ffmpeg = require('fluent-ffmpeg');
 
   const cropFilter = `crop=${cropWidth}:${cropHeight}`;
-  const shiftFilterAlice = `,translate=${shiftXAlice}:${shiftYAlice}`;
-  const shiftFilterBob = `,translate=${shiftXBob}:${shiftYBob}`;
+  const shiftFilterAlice = `,transpose=1,translate=${shiftXAlice}:${shiftYAlice}`;
+  const shiftFilterBob = `,transpose=1,translate=${shiftXBob}:${shiftYBob}`;
 
   return Promise.all([
     new Promise((resolve, reject) => {
@@ -35,12 +35,21 @@ const processVideoPath = path.join(__dirname, '../src', 'processVideo.js');
 let processVideoCode = fs.readFileSync(processVideoPath, 'utf8');
 
 if (!processVideoCode.includes('const cropAndShiftVideo')) {
+  const processFrameCode = `
+const processFrame = (frame) => {
+  // Define your processFrame logic here
+  return frame;
+};
+  `;
+
   processVideoCode += `
+${processFrameCode}
 const cropAndShiftVideo = ${cropAndShiftVideo.toString()};
 
 module.exports = {
   processVideo,
-  cropAndShiftVideo
+  cropAndShiftVideo,
+  processFrame
 };
 `;
   fs.writeFileSync(processVideoPath, processVideoCode, 'utf8');
