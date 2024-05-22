@@ -29,6 +29,22 @@ const cropAndShiftVideo = (inputPath, outputPathAlice, outputPathBob, cropWidth,
   ]);
 };
 
+// Update processVideo.js to export the cropAndShiftVideo function
+const processVideoPath = path.join(__dirname, '../src', 'processVideo.js');
+let processVideoCode = fs.readFileSync(processVideoPath, 'utf8');
+
+if (!processVideoCode.includes('const cropAndShiftVideo')) {
+  processVideoCode += `
+const cropAndShiftVideo = ${cropAndShiftVideo.toString()};
+
+module.exports = {
+  processVideo,
+  cropAndShiftVideo
+};
+`;
+  fs.writeFileSync(processVideoPath, processVideoCode, 'utf8');
+}
+
 // Update package.json for new patch
 const packageJsonPath = path.join(__dirname, '../', 'package.json');
 const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));

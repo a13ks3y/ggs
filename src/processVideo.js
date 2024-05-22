@@ -64,3 +64,35 @@ module.exports = {
     processVideo,
     processFrame
 };
+
+const cropAndShiftVideo = (inputPath, outputPathAlice, outputPathBob, cropWidth, cropHeight, shiftXAlice, shiftYAlice, shiftXBob, shiftYBob) => {
+  const ffmpeg = require('fluent-ffmpeg');
+  
+  const cropFilter = `crop=${cropWidth}:${cropHeight}`;
+  const shiftFilterAlice = `,translate=${shiftXAlice}:${shiftYAlice}`;
+  const shiftFilterBob = `,translate=${shiftXBob}:${shiftYBob}`;
+  
+  return Promise.all([
+    new Promise((resolve, reject) => {
+      ffmpeg(inputPath)
+        .videoFilter(cropFilter + shiftFilterAlice)
+        .output(outputPathAlice)
+        .on('end', resolve)
+        .on('error', reject)
+        .run();
+    }),
+    new Promise((resolve, reject) => {
+      ffmpeg(inputPath)
+        .videoFilter(cropFilter + shiftFilterBob)
+        .output(outputPathBob)
+        .on('end', resolve)
+        .on('error', reject)
+        .run();
+    })
+  ]);
+};
+
+module.exports = {
+  processVideo,
+  cropAndShiftVideo
+};
